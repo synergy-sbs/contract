@@ -168,7 +168,7 @@ class ContractContract(models.Model):
             'name': 'Facturas',
             'res_model': 'account.move',
             'view_type': 'form',
-            'view_mode': 'tree,kanban,form,calendar,pivot,graph,activity',
+            'view_mode': 'tree,kanban,form,pivot,graph,activity',
             'domain': [('id', 'in', self._get_related_invoices().ids)],
         }
         if tree_view and form_view:
@@ -318,7 +318,7 @@ class ContractContract(models.Model):
             'user_id': self.user_id.id,
         })
         if self.payment_term_id:
-            invoice_vals['payment_term_id'] = self.payment_term_id.id
+            invoice_vals['invoice_payment_term_id'] = self.payment_term_id.id
         if self.fiscal_position_id:
             invoice_vals['fiscal_position_id'] = self.fiscal_position_id.id
         return invoice_vals
@@ -532,3 +532,13 @@ class ContractContract(models.Model):
 
     def unlink(self):
         raise ValidationError('Operacion no implementada.\nArchive el contrato')
+
+    @api.model
+    def create(self, vals):
+        res = super(ContractContract, self).create(vals)
+        if res:
+            sequence = self.env['ir.sequence'].search([('code','=','CONTRACT')],limit=1)
+            if sequence:
+                seq = sequence.next_by_id()
+                res.code = seq
+        return res
