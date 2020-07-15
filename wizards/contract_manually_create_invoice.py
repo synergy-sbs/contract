@@ -51,13 +51,13 @@ class ContractManuallyCreateInvoice(models.TransientModel):
 
     def create_invoice(self):
         self.ensure_one()
-        invoices = self.env['account.invoice']
+        invoices = self.env['account.move']
         for contract in self.contract_to_invoice_ids:
             invoices |= contract.recurring_create_invoice()
         return {
             "type": "ir.actions.act_window",
             "name": _("Invoices"),
-            "res_model": "account.invoice",
+            "res_model": "account.move",
             "domain": [('id', 'in', invoices.ids)],
             "view_mode": "tree,form",
             "context": self.env.context,

@@ -1750,7 +1750,7 @@ class TestContract(TestContractBase):
         for i in range(10):
             contracts |= self.contract.copy()
         self.env['contract.contract'].cron_recurring_create_invoice()
-        invoice_lines = self.env['account.invoice.line'].search(
+        invoice_lines = self.env['account.move.line'].search(
             [('contract_line_id', 'in',
               contracts.mapped('contract_line_ids').ids)]
         )
@@ -1780,7 +1780,7 @@ class TestContract(TestContractBase):
             ),
         )
         action = wizard.create_invoice()
-        invoice_lines = self.env['account.invoice.line'].search(
+        invoice_lines = self.env['account.move.line'].search(
             [('contract_line_id', 'in',
               contracts.mapped('contract_line_ids').ids)]
         )
@@ -1788,7 +1788,7 @@ class TestContract(TestContractBase):
             len(contracts.mapped('contract_line_ids')),
             len(invoice_lines),
         )
-        invoices = self.env['account.invoice'].search(action['domain'])
+        invoices = self.env['account.move'].search(action['domain'])
         self.assertEqual(invoice_lines.mapped('invoice_id'), invoices)
         self.assertEqual(len(invoices), contract_to_invoice_count)
 
@@ -2318,7 +2318,7 @@ class TestContract(TestContractBase):
         self.assertEqual(self.contract.invoice_count, 3)
 
     def test_contract_count_invoice_2(self):
-        invoices = self.env['account.invoice']
+        invoices = self.env['account.move']
         invoices |= self.contract.recurring_create_invoice()
         invoices |= self.contract.recurring_create_invoice()
         invoices |= self.contract.recurring_create_invoice()
